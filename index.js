@@ -18,6 +18,10 @@ const setup = async () => {
     `);
     }
 
+    // Set the text content of the new HTML elements
+  $("#total-count").text(`Total Pokémons: ${pokemons.length}`);
+  $("#displayed-count").text(`Pokémons displayed: ${Math.min(PAGE_SIZE, pokemons.length)}`);
+
     const setPage = (pageNumber) => {
         $("#paginationControls button").removeClass("active");
         $(`#paginationControls button:nth-child(${pageNumber + 1})`).addClass("active");
