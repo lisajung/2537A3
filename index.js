@@ -19,8 +19,8 @@ const setup = async () => {
     }
 
     // Set the text content of the new HTML elements
-  $("#total-count").text(`Total Pokémons: ${pokemons.length}`);
-  $("#displayed-count").text(`Pokémons displayed: ${Math.min(PAGE_SIZE, pokemons.length)}`);
+    $("#total-count").text(`Total Pokémons: ${pokemons.length}`);
+    $("#displayed-count").text(`Pokémons displayed: ${Math.min(PAGE_SIZE, pokemons.length)}`);
 
     const setPage = (pageNumber) => {
         $("#paginationControls button").removeClass("active");
@@ -48,7 +48,7 @@ const setup = async () => {
         }
     });
 
- 
+
     $("#paginationControls").append(`
     <button type="button" class="btn btn-primary" id="nextButton">Next</button>
   `);
@@ -81,6 +81,23 @@ const showOrHidePreviousAndNextButtons = () => {
     }
 };
 
+const fetchPokemonTypes = async () => {
+    const response = await axios.get('https://pokeapi.co/api/v2/type');
+    const pokemonTypes = response.data.results;
+    const typeCheckboxes = pokemonTypes.map(
+        (type) => `
+        <label>
+          <input type="checkbox" name="type" value="${type.name}" />
+          ${type.name}
+        </label>
+      `
+    );
+    const checkboxesContainer = document.querySelector('#type-checkboxes');
+    checkboxesContainer.innerHTML = typeCheckboxes.join('');
+};
+fetchPokemonTypes();
+
+
 
 const displayPokemons = async () => {
     $("#main").empty();
@@ -108,7 +125,11 @@ const displayPokemons = async () => {
             (type) => `<li>${type.type.name}</li>`
         );
 
+        console.log(pokemonResult)
+
+
         $("#main").append(`
+
       <div class="card" style="width: 18rem;">
         <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${i + 1 + startingIndex}.png" class="card-img-top" alt="...">
         <div class="card-body">
