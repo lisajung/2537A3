@@ -3,37 +3,54 @@ const setup = async () => {
     console.log("Setup is running");
 
     const result = await axios.get("https://pokeapi.co/api/v2/pokemon?limit=810")
-    //const pokemons = result.data.results;
+    const pokemons = result.data.results;
 
+    //get 81 buttons
+    const PAGE_SIZE = 10
+    const numberOfButtons = Math.ceil(pokemons.length / PAGE_SIZE)
+    for (let i = 0; i < numberOfButtons; i++) {
+        $("#paginationControls").append(`
+        <button type="button" class="btn btn-primary">${i + 1}</button>
+        `)
+    }
+
+    //add event listener to buttons
+    $("#paginationControls button").on("click", async(event) => {
+        $("#main").empty()
     
-     const pokemons = result.data.results.slice(0, 10)
+    const startingIndex = (event.target.innerText - 1) * PAGE_SIZE
+    const endIndex = startingIndex + PAGE_SIZE
+     const SplicedPokemons = result.data.results.slice(startingIndex, endIndex)
+     console.log(SplicedPokemons)
 
-    for (let i = 0; i < pokemons.length; i++) {
+    for (let i = 0; i < SplicedPokemons.length; i++) {
         //pokemons.forEach(async (pokemon, index) => {
-        pokemon = pokemons[i]
+        pokemon = SplicedPokemons[i]
         index = i
 
         const pokemonResult = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemon.name}`)
         console.log(pokemonResult);
 
         // array of ability names
-        const abilityNames = pokemonResult.data.abilities.map((ability) => ability.ability.name);
+        const abilityNames = pokemonResult.data.abilities.map((ability) => `<li>${ability.ability.name}</li>`);
+
+        // array of stats
+        const stats = pokemonResult.data.stats.map((stat) => `<li>${stat.stat.name}: ${stat.base_stat}</li>`);
 
         // array of type names
-        const typeNames = pokemonResult.data.types.map((type) => type.type.name);
+        const typeNames = pokemonResult.data.types.map((type) => `<li>${type.type.name}</li>`);
 
 
         $("#main").append(`
         <div class="card" style="width: 18rem;">
-        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${index + 1}.png" class="card-img-top" alt="...">
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${index + 1 + startingIndex}.png" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">${pokemon.name}</h5>
           <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
           
           <!-- Button trigger modal -->
           <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal${pokemon.name}">
-              Launch demo modal
+              Pokemon details
           </button>
 
           <!-- Modal -->
@@ -46,8 +63,9 @@ const setup = async () => {
                       </div>
                       <div class="modal-body">
                       <p> Pokemon ID: ${pokemonResult.data.id}</p>
-                      <p>Abilities: ${abilityNames.join(", ")}</p>
-                      <p>Types: ${typeNames.join(", ")}</p>
+                      <p>Abilities: ${abilityNames.join(" ")}</p>
+                      <p>Stats: ${stats.join(" ")}</p>
+                      <p>Types: ${typeNames.join(" ")}</p>
                       </div>
                       <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -64,16 +82,9 @@ const setup = async () => {
     }
 
 
-    //get 81 buttons
-    const PAGE_SIZE = 10
-    const numberOfButtons = Math.ceil(pokemons.length / PAGE_SIZE)
-    for (let i = 0; i < numberOfButtons; i++) {
-        $("#paginationControls").append(`
-        <button type="button" class="btn btn-primary">${i + 1}</button>
-        `)
-    }
+    
 
-   
+    })
 }
 
 $(document).ready(setup)
