@@ -97,9 +97,20 @@ const fetchPokemonTypes = async () => {
 };
 fetchPokemonTypes();
 
+const filterPokemonByType = () => {
+    const selectedTypes = [...document.querySelectorAll('input[name="type"]:checked')].map(input => input.value);
+    console.log(selectedTypes);
+    const filteredPokemons = pokemons.filter(pokemon => {
+      return pokemon.types && pokemon.types.some(type => selectedTypes.includes(type.type.name));
+    });
+    displayPokemons(filteredPokemons);
+  };
+  
 
 
 const displayPokemons = async () => {
+    document.querySelector('#type-checkboxes').addEventListener('change', filterPokemonByType);
+
     $("#main").empty();
 
     const startingIndex = (currentPage - 1) * PAGE_SIZE;
@@ -125,7 +136,7 @@ const displayPokemons = async () => {
             (type) => `<li>${type.type.name}</li>`
         );
 
-        console.log(pokemonResult)
+
 
 
         $("#main").append(`
@@ -134,7 +145,6 @@ const displayPokemons = async () => {
         <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${i + 1 + startingIndex}.png" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">${pokemon.name}</h5>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
 
           <!-- Button trigger modal -->
           <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal${pokemon.name}">
@@ -157,7 +167,6 @@ const displayPokemons = async () => {
                 </div>
                       <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                          <button type="button" class="btn btn-primary">Save changes</button>
                       </div>
                   </div>
               </div>
